@@ -4,6 +4,7 @@ use Moose;
 use Storable qw(dclone);
 use Catalyst::Utils;
 use Catalyst::Exception::MissingParameter;
+use Catalyst::Exception::InvalidArrayPointer;
 
 has context => (is=>'ro', required=>1);
 has _namespace => (is=>'rw', required=>0, isa=>'ArrayRef', predicate=>'has_namespace', init_arg=>'namespace');
@@ -143,10 +144,8 @@ sub _parse_data {
         }
       }
 
+      Catalyst::Exception::InvalidArrayPointer->throw(pointer=>join('.', (@$ns, $local_ns))) unless (ref($value)||'') eq 'ARRAY';
       my @gathered = ();
-
-      # TODO: raise error if $value is not an arrayref
-
       foreach my $item (@$value) {
         my $cloned_rules = dclone($rules); # each iteration in the loop needs its own copy of the rules;
         $cloned_rules = [''] unless @$cloned_rules; # to handle the bare array case
