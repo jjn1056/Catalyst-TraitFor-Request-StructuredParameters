@@ -101,7 +101,10 @@ sub _parse_formlike {
       foreach my $index(sort _sorted keys %indexes) {
         my $cloned_rules = dclone($rules); # each iteration in the loop needs its own copy of the rules;
         $cloned_rules = [''] unless @$cloned_rules; # to handle the bare array case
-        push @{$current->{$local_ns}}, $self->_parse_formlike( $context, [@$ns, "${local_ns}[$index]"], $cloned_rules);
+        my $value = $self->_parse_formlike( $context, [@$ns, "${local_ns}[$index]"], $cloned_rules);
+        ## I don't think these are missing params, just a row with invalid fields
+        next if( (ref($value)||'') eq 'HASH') && !%$value;
+        push @{$current->{$local_ns}}, $value;
       }
     } else {
       if((ref($rules->[0])||'') eq 'ARRAY') {
@@ -149,7 +152,10 @@ sub _parse_data {
       foreach my $item (@$value) {
         my $cloned_rules = dclone($rules); # each iteration in the loop needs its own copy of the rules;
         $cloned_rules = [''] unless @$cloned_rules; # to handle the bare array case
-        push @gathered, $self->_parse_data($item, [], $cloned_rules);
+        my $value = $self->_parse_data($item, [], $cloned_rules);
+        ## I don't think these are missing params, just a row with invalid fields
+        next if( (ref($value)||'') eq 'HASH') && !%$value;
+        push @gathered, $value;
       }
       $current->{$local_ns} = \@gathered;
     } else {

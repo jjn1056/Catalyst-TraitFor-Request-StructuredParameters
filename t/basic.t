@@ -129,12 +129,14 @@ use Catalyst::Test 'MyApp';
     'person.credit_cards[2].note[0]' => '1',
     'person.credit_cards[2].note[1]' => '2',
     'person.credit_cards[2].note[2]' => '3',
+    'person.credit_cards[2]._add' => 1,
+    'person.credit_cards[3]._add' => 1,
     'person.credit_cards[].number' => '444444433333',
     'person.credit_cards[].exp' => '4024-01-01',
   ];
 
   ok my $res = request POST '/root/body', $body_parameters;
-  ok my $data = eval $res->content;
+  ok my $data = eval $res->content;  
   is_deeply $data, +{
     address => {
       street => {
@@ -221,6 +223,9 @@ use Catalyst::Test 'MyApp';
     'person.credit_cards[2].note[0]' => '1',
     'person.credit_cards[2].note[1]' => '2',
     'person.credit_cards[2].note[2]' => '3',
+    'person.credit_cards[2]._add' => 1,
+    'person.credit_cards[3]._add' => 1,
+
     'person.credit_cards[].number' => '444444433333',
     'person.credit_cards[].exp' => '4024-01-01',
   ];

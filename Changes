@@ -1,4 +1,8 @@
 # This file documents the revision history for Perl extension Catalyst-TraitFor-Request-StrongParameters.
 
+0.002 - 2021-01-12
+  - fixed issue where an array element was comprised only of disallowed fields
+
 0.001 - 2021-10-12
   - First Release 
+
