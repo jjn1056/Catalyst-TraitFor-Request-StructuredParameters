@@ -355,15 +355,24 @@ handle them.  For example you can add a global or controller scoped 'end' action
       my ($self, $c) = @_;
       if(my $error = $c->last_error) {
         $c->clear_errors;
-        if(blessed($error) && $error->isa('Catalyst::Exception::MissingParameter')) {
+        if(blessed($error) && $error->isa('Catalyst::Exception::StrongParameter')) {
           # Handle the error perhaps by forwarding to a view and setting a 4xx 
           # bad request response code.
         }
       }
     }
 
+=head2 Exception: Base Class
+
+L<Catalyst::Exception::StrongParameter>
+
+There's a number of different exceptions that this trait can throw but they all inherit from
+L<Catalyst::Exception::StrongParameter> so you can just check for that since those are all going
+to be considered 'Bad Request' type issues.
 
 =head2 EXCEPTION: MISSING PARAMETER
+
+L<Catalyst::Exception::MissingParameter> ISA L<Catalyst::Exception::StrongParameter>
 
 If you use L</required> and a parameter is not present you will raise this exception, which will
 contain a message indicating the first found missing parameter.  For example:
