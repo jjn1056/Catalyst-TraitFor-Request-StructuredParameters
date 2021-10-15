@@ -1,5 +1,8 @@
 # This file documents the revision history for Perl extension Catalyst-TraitFor-Request-StructuredParameters.
 
+0.005 - 2021-10-15
+  - Fixed another 'oops' in the metadata.
+
 0.004 - 2021-10-15
   - Small meta data changes that I messed up in the previous release.  Also
   I'm doing one last release under the old namespace and I wanted this one
