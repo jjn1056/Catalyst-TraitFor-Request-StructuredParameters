@@ -1,16 +1,16 @@
-package Catalyst::TraitFor::Request::StrongParameters;
+package Catalyst::TraitFor::Request::StructuredParameters;
 
 our $VERSION = '0.002';
 
 use Moose::Role;
-use Catalyst::Utils::StrongParameters;
+use Catalyst::Utils::StructuredParameters;
 
 # Yeah there's copy pasta here just right now I'm not sure we won't need more 
 # customization so I'm just going to leave it.
 
-sub strong_body {
+sub structured_body {
   my ($self, @args) = @_;
-  my $strong = Catalyst::Utils::StrongParameters->new(
+  my $strong = Catalyst::Utils::StructuredParameters->new(
     src => 'body',
     flatten_array_value => 1,
     context => $self->body_parameters||+{}
@@ -19,9 +19,9 @@ sub strong_body {
   return $strong;
 }
 
-sub strong_query {
+sub structured_query {
   my ($self, @args) = @_;
-  my $strong = Catalyst::Utils::StrongParameters->new(
+  my $strong = Catalyst::Utils::StructuredParameters->new(
     src => 'query',
     flatten_array_value => 1,
     context => $self->query_parameters||+{}
@@ -30,9 +30,9 @@ sub strong_query {
   return $strong;
 }
 
-sub strong_data {
+sub structured_data {
   my ($self, @args) = @_;
-  my $strong = Catalyst::Utils::StrongParameters->new(
+  my $strong = Catalyst::Utils::StructuredParameters->new(
     src => 'data',
     flatten_array_value => 0,
     context => $self->body_data||+{}
@@ -45,7 +45,7 @@ sub strong_data {
 
 =head1 NAME
 
-Catalyst::TraitFor::Request::StrongParameters - Enforce structural rules on your body and data parameters
+Catalyst::TraitFor::Request::StructuredParameters - Enforce structural rules on your body and data parameters
 
 =head1 SYNOPSIS
 
@@ -55,7 +55,7 @@ For L<Catalyst> v5.90090+
  
     use Catalyst;
  
-    MyApp->request_class_traits(['Catalyst::TraitFor::Request::StrongParameters']);
+    MyApp->request_class_traits(['Catalyst::TraitFor::Request::StructuredParameters']);
     MyApp->setup;
  
 For L<Catalyst> older than v5.90090
@@ -65,7 +65,7 @@ For L<Catalyst> older than v5.90090
     use Catalyst;
     use CatalystX::RoleApplicator;
  
-    MyApp->apply_request_class_roles('Catalyst::TraitFor::Request::StrongParameters');
+    MyApp->apply_request_class_roles('Catalyst::TraitFor::Request::StructuredParameters');
     MyApp->setup;
  
 In a controller:
@@ -95,7 +95,7 @@ In a controller:
       #   'email[1]' => 'jjn1056@example2.com',
       # }
 
-      my %body_parameters = $c->req->strong_body
+      my %body_parameters = $c->req->structured_body
         ->permitted('username', 'password', 'password_confirmation', name => ['first', 'last'], +{email=>[]} )
         ->to_hash;
 
@@ -113,9 +113,6 @@ In a controller:
       #   email => ['jjn1056@example1.com', 'jjn1056@example2.com'],
       # );
 
-      # If you don't have theses that meant the request was ill-formed.
-      $c->detach('errors/400_bad_request') unless %body_parameters; 
-
       # Ok so now you know %body_parameters are 'well-formed', you can use them to do stuff like
       # value validation and updating a databases, etc.
 
@@ -130,7 +127,7 @@ test cases.
 When your web application receives incoming POST body or data you should treat that data with suspicion.
 Even prior to validation you need to make sure the incoming structure is well formed (this is most
 important when you have deeply nested structures, which can be a major security risk both in parsing
-and in using that data to do things like update a database). L<Catalyst::TraitFor::Request::StrongParameters>
+and in using that data to do things like update a database). L<Catalyst::TraitFor::Request::StructuredParameters>
 offers a structured approach to whitelisting your incoming POSTed data, as well as a safe way to introduce
 nested data structures into your classic HTML Form posted data.  It is also compatible for POSTed data
 (such as JSON POSTed data) although in the case of body data such as JSON we merely whitelist the fields
@@ -144,24 +141,24 @@ and subject to change should real life use cases arise that indicate a different
 
 This role defines the following methods:
 
-=head2 strong_body
+=head2 structured_body
 
-Returns an instance of L<Catalyst::Utils::StrongParameters> preconfigured with the current contents
+Returns an instance of L<Catalyst::Utils::StructuredParameters> preconfigured with the current contents
 of ->body_parameters. Any arguments are passed to that instances L</permitted> methods before return.
 
-=head2 strong_query
+=head2 structured_query
 
-Parses the URI query string; otherwise same as L</strong_body>.
+Parses the URI query string; otherwise same as L</structured_body>.
 
-=head2 strong_data
+=head2 structured_data
 
-The same as L</strong_body> except aimed at body data such as JSON post.   Basically works
+The same as L</structured_body> except aimed at body data such as JSON post.   Basically works
 the same except the default for handling array values is to leave them alone rather than to flatten.
 
 =head1 PARAMETER OBJECT METHODS
 
-The instance of L<Catalyst::Utils::StrongParameters> which is returned by any of the three builder
-methods above (L</strong_body>, L</strong_query and L</strong_data>) supports the following methods.
+The instance of L<Catalyst::Utils::StructuredParameters> which is returned by any of the three builder
+methods above (L</structured_body>, L</structured_query and L</structured_data>) supports the following methods.
 
 =head2 namespace (\@fields)
 
@@ -206,13 +203,13 @@ Returns the currently filtered parameters based on the current permitted and/or 
 
 =head1 CHAINING
 
-All the public methods for L<Catalyst::Utils::StrongParameters> return the current instance so that
+All the public methods for L<Catalyst::Utils::StructuredParameters> return the current instance so that
 you can chain methods easilu (except for L</to_hash>).   If you chain L</permitted> and L</required>
 the accepted hashrefs are merged.
 
 =head1 RULE SPECIFICATIONS
 
-L<Catalyst::TraitFor::Request::StrongParameters> offers a concise DSL for describing permitted and required
+L<Catalyst::TraitFor::Request::StructuredParameters> offers a concise DSL for describing permitted and required
 parameters, including flat parameters, hashes, arrays and any combination thereof.
 
 Given body_parameters of the following:
@@ -238,7 +235,7 @@ Given body_parameters of the following:
 
     # %data = ( name => 'John', age => 53 );
     
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', address => ['street', 'zip']); # arrayref means the following are subkeys
 
@@ -251,7 +248,7 @@ Given body_parameters of the following:
     #   }
     # );
 
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', +{email => []} );  # wrapping in a hashref mean 'under this is an arrayref
 
@@ -262,7 +259,7 @@ Given body_parameters of the following:
     # );
     
     # Combine hashref and arrayref to indicate array of subkeyu
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', +{credit_cards => [qw/number exp/]} ); 
 
@@ -296,7 +293,7 @@ parameters are:
       'person.credit_cards[1].exp.month' => '01',
     }
 
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted(+{credit_cards => ['number', 'exp', exp=>[qw/year month/] ]} ); 
 
@@ -319,7 +316,7 @@ parameters are:
 
 =head2 ARRAY DATA AND ARRAY VALUE FLATTENING
 
-Please note this only applies to L</strong_body> / L</strong_query>
+Please note this only applies to L</structured_body> / L</structured_query>
 
 In the situation when you have a array value for a given namespace specification such as
 the following :
@@ -332,7 +329,7 @@ that don't set an 'off' value (like checkboxes).
 
 =head2 'EMPTY' FINAL INDEXES
 
-Please note this only applies to L</strong_body> / L</strong_query>
+Please note this only applies to L</structured_body> / L</structured_query>
 
 Since the index values used to sort arrays are not preserved (they indicate order but are not used to
 set the index since that could open your code to potential hackers) we permit a final 'empty' index:
@@ -344,7 +341,7 @@ set the index since that could open your code to potential hackers) we permit a 
     'person.credit_cards[].number' => '444444433333',
     'person.credit_cards[].exp' => '4024-01-01',
 
-This 'empty' index will always be considered the finall element when sorting
+This 'empty' index will always be considered the final element when sorting
 
 =head1 EXCEPTIONS
 
@@ -362,17 +359,25 @@ handle them.  For example you can add a global or controller scoped 'end' action
       }
     }
 
+Alternatively (and probably neater) just use L<CatalystX::Error>.
+
+    sub end :Action Does(RenderError) { }
+
+You'll need to add the included L<Catalyst::Plugin::Errors> plugin to your application class in order
+to use this ActionRole.
+
 =head2 Exception: Base Class
 
-L<Catalyst::Exception::StrongParameter>
+L<Catalyst::Exception::StructuredParameter>
 
 There's a number of different exceptions that this trait can throw but they all inherit from
-L<Catalyst::Exception::StrongParameter> so you can just check for that since those are all going
-to be considered 'Bad Request' type issues.
+L<Catalyst::Exception::StructuredParameter> so you can just check for that since those are all going
+to be considered 'Bad Request' type issues.  This also inherits from L<CatalystX::Utils::HttpException>
+so you can use the L<CatalystX::Errors> package to neaten up / regularize your error control.
 
 =head2 EXCEPTION: MISSING PARAMETER
 
-L<Catalyst::Exception::MissingParameter> ISA L<Catalyst::Exception::StrongParameter>
+L<Catalyst::Exception::MissingParameter> ISA L<Catalyst::Exception::StructuredParameter>
 
 If you use L</required> and a parameter is not present you will raise this exception, which will
 contain a message indicating the first found missing parameter.  For example:

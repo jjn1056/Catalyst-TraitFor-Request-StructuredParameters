@@ -1,4 +1,4 @@
-package Catalyst::Utils::StrongParameters;
+package Catalyst::Utils::StructuredParameters;
 
 use Moose;
 use Storable qw(dclone);
@@ -198,13 +198,13 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-Catalyst::Utils::StrongParameters - Enforce structural rules on your body and data parameters
+Catalyst::Utils::StructuredParameters - Enforce structural rules on your body and data parameters
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-See L<Catalyst::TraitFor::Request::StrongParameters> for usage.  These are just utility classes
+See L<Catalyst::TraitFor::Request::StructuredParameters> for usage.  These are just utility classes
 and not likely useful for end user unless you are rolling your own parsing or something.  All
 the publically useful docs are there.   
 
@@ -222,7 +222,7 @@ This role defines the following methods:
 
 =head1 AUTHOR
 
-See L<Catalyst::TraitFor::Request::StrongParameters>
+See L<Catalyst::TraitFor::Request::StructuredParameters>
 
 =head1 SEE ALSO
 
@@ -230,6 +230,6 @@ L<Catalyst>, L<Catalyst::Request>
 
 =head1 COPYRIGHT & LICENSE
 
-See L<Catalyst::TraitFor::Request::StrongParameters>
+See L<Catalyst::TraitFor::Request::StructuredParameters>
 
 =cut
