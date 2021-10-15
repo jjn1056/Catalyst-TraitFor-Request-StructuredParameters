@@ -1,6 +1,6 @@
 # NAME
 
-Catalyst::TraitFor::Request::StrongParameters - Enforce structural rules on your body and data parameters
+Catalyst::TraitFor::Request::StructuredParameters - Enforce structural rules on your body and data parameters
 
 # SYNOPSIS
 
@@ -10,7 +10,7 @@ For [Catalyst](https://metacpan.org/pod/Catalyst) v5.90090+
     
        use Catalyst;
     
-       MyApp->request_class_traits(['Catalyst::TraitFor::Request::StrongParameters']);
+       MyApp->request_class_traits(['Catalyst::TraitFor::Request::StructuredParameters']);
        MyApp->setup;
     
 
@@ -21,7 +21,7 @@ For [Catalyst](https://metacpan.org/pod/Catalyst) older than v5.90090
        use Catalyst;
        use CatalystX::RoleApplicator;
     
-       MyApp->apply_request_class_roles('Catalyst::TraitFor::Request::StrongParameters');
+       MyApp->apply_request_class_roles('Catalyst::TraitFor::Request::StructuredParameters');
        MyApp->setup;
     
 
@@ -52,7 +52,7 @@ In a controller:
       #   'email[1]' => 'jjn1056@example2.com',
       # }
 
-      my %body_parameters = $c->req->strong_body
+      my %body_parameters = $c->req->structured_body
         ->permitted('username', 'password', 'password_confirmation', name => ['first', 'last'], +{email=>[]} )
         ->to_hash;
 
@@ -70,9 +70,6 @@ In a controller:
       #   email => ['jjn1056@example1.com', 'jjn1056@example2.com'],
       # );
 
-      # If you don't have theses that meant the request was ill-formed.
-      $c->detach('errors/400_bad_request') unless %body_parameters; 
-
       # Ok so now you know %body_parameters are 'well-formed', you can use them to do stuff like
       # value validation and updating a databases, etc.
 
@@ -87,7 +84,7 @@ test cases.
 When your web application receives incoming POST body or data you should treat that data with suspicion.
 Even prior to validation you need to make sure the incoming structure is well formed (this is most
 important when you have deeply nested structures, which can be a major security risk both in parsing
-and in using that data to do things like update a database). [Catalyst::TraitFor::Request::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStrongParameters)
+and in using that data to do things like update a database). [Catalyst::TraitFor::Request::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStructuredParameters)
 offers a structured approach to whitelisting your incoming POSTed data, as well as a safe way to introduce
 nested data structures into your classic HTML Form posted data.  It is also compatible for POSTed data
 (such as JSON POSTed data) although in the case of body data such as JSON we merely whitelist the fields
@@ -101,24 +98,24 @@ and subject to change should real life use cases arise that indicate a different
 
 This role defines the following methods:
 
-## strong\_body
+## structured\_body
 
-Returns an instance of [Catalyst::Utils::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStrongParameters) preconfigured with the current contents
+Returns an instance of [Catalyst::Utils::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStructuredParameters) preconfigured with the current contents
 of ->body\_parameters. Any arguments are passed to that instances ["permitted"](#permitted) methods before return.
 
-## strong\_query
+## structured\_query
 
-Parses the URI query string; otherwise same as ["strong\_body"](#strong_body).
+Parses the URI query string; otherwise same as ["structured\_body"](#structured_body).
 
-## strong\_data
+## structured\_data
 
-The same as ["strong\_body"](#strong_body) except aimed at body data such as JSON post.   Basically works
+The same as ["structured\_body"](#structured_body) except aimed at body data such as JSON post.   Basically works
 the same except the default for handling array values is to leave them alone rather than to flatten.
 
 # PARAMETER OBJECT METHODS
 
-The instance of [Catalyst::Utils::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStrongParameters) which is returned by any of the three builder
-methods above (["strong\_body"](#strong_body), ["strong\_query and ) supports the following methods."](#strong_query-and-strong_data-supports-the-following-methods)
+The instance of [Catalyst::Utils::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStructuredParameters) which is returned by any of the three builder
+methods above (["structured\_body"](#structured_body), ["structured\_query and ) supports the following methods."](#structured_query-and-structured_data-supports-the-following-methods)
 
 ## namespace (\\@fields)
 
@@ -163,13 +160,13 @@ Returns the currently filtered parameters based on the current permitted and/or 
 
 # CHAINING
 
-All the public methods for [Catalyst::Utils::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStrongParameters) return the current instance so that
+All the public methods for [Catalyst::Utils::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStructuredParameters) return the current instance so that
 you can chain methods easilu (except for ["to\_hash"](#to_hash)).   If you chain ["permitted"](#permitted) and ["required"](#required)
 the accepted hashrefs are merged.
 
 # RULE SPECIFICATIONS
 
-[Catalyst::TraitFor::Request::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStrongParameters) offers a concise DSL for describing permitted and required
+[Catalyst::TraitFor::Request::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStructuredParameters) offers a concise DSL for describing permitted and required
 parameters, including flat parameters, hashes, arrays and any combination thereof.
 
 Given body\_parameters of the following:
@@ -195,7 +192,7 @@ Given body\_parameters of the following:
 
     # %data = ( name => 'John', age => 53 );
     
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', address => ['street', 'zip']); # arrayref means the following are subkeys
 
@@ -208,7 +205,7 @@ Given body\_parameters of the following:
     #   }
     # );
 
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', +{email => []} );  # wrapping in a hashref mean 'under this is an arrayref
 
@@ -219,7 +216,7 @@ Given body\_parameters of the following:
     # );
     
     # Combine hashref and arrayref to indicate array of subkeyu
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted('name','age', +{credit_cards => [qw/number exp/]} ); 
 
@@ -253,7 +250,7 @@ parameters are:
       'person.credit_cards[1].exp.month' => '01',
     }
 
-    my %data = $c->req->strong_body
+    my %data = $c->req->structured_body
       ->namespace(['person'])
       ->permitted(+{credit_cards => ['number', 'exp', exp=>[qw/year month/] ]} ); 
 
@@ -275,7 +272,7 @@ parameters are:
 
 ## ARRAY DATA AND ARRAY VALUE FLATTENING
 
-Please note this only applies to ["strong\_body"](#strong_body) / ["strong\_query"](#strong_query)
+Please note this only applies to ["structured\_body"](#structured_body) / ["structured\_query"](#structured_query)
 
 In the situation when you have a array value for a given namespace specification such as
 the following :
@@ -288,7 +285,7 @@ that don't set an 'off' value (like checkboxes).
 
 ## 'EMPTY' FINAL INDEXES
 
-Please note this only applies to ["strong\_body"](#strong_body) / ["strong\_query"](#strong_query)
+Please note this only applies to ["structured\_body"](#structured_body) / ["structured\_query"](#structured_query)
 
 Since the index values used to sort arrays are not preserved (they indicate order but are not used to
 set the index since that could open your code to potential hackers) we permit a final 'empty' index:
@@ -300,7 +297,7 @@ set the index since that could open your code to potential hackers) we permit a 
     'person.credit_cards[].number' => '444444433333',
     'person.credit_cards[].exp' => '4024-01-01',
 
-This 'empty' index will always be considered the finall element when sorting
+This 'empty' index will always be considered the final element when sorting
 
 # EXCEPTIONS
 
@@ -311,24 +308,32 @@ handle them.  For example you can add a global or controller scoped 'end' action
       my ($self, $c) = @_;
       if(my $error = $c->last_error) {
         $c->clear_errors;
-        if(blessed($error) && $error->isa('Catalyst::Exception::StrongParameter')) {
+        if(blessed($error) && $error->isa('Catalyst::Exception::StructuredParameter')) {
           # Handle the error perhaps by forwarding to a view and setting a 4xx 
           # bad request response code.
         }
       }
     }
 
+Alternatively (and probably neater) just use [CatalystX::Error](https://metacpan.org/pod/CatalystX%3A%3AError).
+
+    sub end :Action Does(RenderError) { }
+
+You'll need to add the included [Catalyst::Plugin::Errors](https://metacpan.org/pod/Catalyst%3A%3APlugin%3A%3AErrors) plugin to your application class in order
+to use this ActionRole.
+
 ## Exception: Base Class
 
-[Catalyst::Exception::StrongParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStrongParameter)
+[Catalyst::Exception::StructuredParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStructuredParameter)
 
 There's a number of different exceptions that this trait can throw but they all inherit from
-[Catalyst::Exception::StrongParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStrongParameter) so you can just check for that since those are all going
-to be considered 'Bad Request' type issues.
+[Catalyst::Exception::StructuredParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStructuredParameter) so you can just check for that since those are all going
+to be considered 'Bad Request' type issues.  This also inherits from [CatalystX::Utils::HttpException](https://metacpan.org/pod/CatalystX%3A%3AUtils%3A%3AHttpException)
+so you can use the [CatalystX::Errors](https://metacpan.org/pod/CatalystX%3A%3AErrors) package to neaten up / regularize your error control.
 
 ## EXCEPTION: MISSING PARAMETER
 
-[Catalyst::Exception::MissingParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AMissingParameter) ISA [Catalyst::Exception::StrongParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStrongParameter)
+[Catalyst::Exception::MissingParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AMissingParameter) ISA [Catalyst::Exception::StructuredParameter](https://metacpan.org/pod/Catalyst%3A%3AException%3A%3AStructuredParameter)
 
 If you use ["required"](#required) and a parameter is not present you will raise this exception, which will
 contain a message indicating the first found missing parameter.  For example:
@@ -357,7 +362,7 @@ the same terms as Perl itself.
 
 Hey! **The above document had some coding errors, which are explained below:**
 
-- Around line 163:
+- Around line 160:
 
     Nested L<> are illegal.  Pretending inner one is X<...> so can continue looking for other errors.
 

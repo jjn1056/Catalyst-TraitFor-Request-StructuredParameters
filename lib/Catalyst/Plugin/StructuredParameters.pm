@@ -71,7 +71,7 @@ Catalyst::Plugin::StructuredParameters - Plug to add the structured parameter re
   
   sub end :Action Does(RenderErrors) { }
 
-You should review L<Catalyst::TraitFor::Request::StrongParameters> for a more detailed SYNOPSIS and
+You should review L<Catalyst::TraitFor::Request::StructuredParameters> for a more detailed SYNOPSIS and
 explanation of how all this works.
 
 =head1 DESCRIPTION

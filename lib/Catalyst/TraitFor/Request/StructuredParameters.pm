@@ -352,7 +352,7 @@ handle them.  For example you can add a global or controller scoped 'end' action
       my ($self, $c) = @_;
       if(my $error = $c->last_error) {
         $c->clear_errors;
-        if(blessed($error) && $error->isa('Catalyst::Exception::StrongParameter')) {
+        if(blessed($error) && $error->isa('Catalyst::Exception::StructuredParameter')) {
           # Handle the error perhaps by forwarding to a view and setting a 4xx 
           # bad request response code.
         }
