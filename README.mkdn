@@ -161,7 +161,7 @@ Returns the currently filtered parameters based on the current permitted and/or 
 # CHAINING
 
 All the public methods for [Catalyst::Utils::StructuredParameters](https://metacpan.org/pod/Catalyst%3A%3AUtils%3A%3AStructuredParameters) return the current instance so that
-you can chain methods easilu (except for ["to\_hash"](#to_hash)).   If you chain ["permitted"](#permitted) and ["required"](#required)
+you can chain methods easily (except for ["to\_hash"](#to_hash)).   If you chain ["permitted"](#permitted) and ["required"](#required)
 the accepted hashrefs are merged.
 
 # RULE SPECIFICATIONS

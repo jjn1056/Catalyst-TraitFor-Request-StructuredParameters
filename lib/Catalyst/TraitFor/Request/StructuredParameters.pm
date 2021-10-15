@@ -204,7 +204,7 @@ Returns the currently filtered parameters based on the current permitted and/or 
 =head1 CHAINING
 
 All the public methods for L<Catalyst::Utils::StructuredParameters> return the current instance so that
-you can chain methods easilu (except for L</to_hash>).   If you chain L</permitted> and L</required>
+you can chain methods easily (except for L</to_hash>).   If you chain L</permitted> and L</required>
 the accepted hashrefs are merged.
 
 =head1 RULE SPECIFICATIONS
