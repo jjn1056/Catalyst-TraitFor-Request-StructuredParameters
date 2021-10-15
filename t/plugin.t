@@ -22,7 +22,7 @@ BEGIN {
 
     Test::Most::ok $c->req->test_trait_yes; # make sure we can add more traits the normal way
     
-    my %clean = $c->strong_body
+    my %clean = $c->structured_body
       ->permitted(['person'], +{'email' => []})
       ->namespace(['person'])
       ->permitted(
@@ -44,7 +44,7 @@ BEGIN {
 
   sub data :Local {
     my ($self, $c) = @_;
-    my %clean = $c->strong_data
+    my %clean = $c->structured_data
       ->permitted(
         ['person'],
         'name',
@@ -66,7 +66,7 @@ BEGIN {
 
   sub query :Local {
     my ($self, $c) = @_;
-    my %clean = $c->strong_query( name=>[qw/first last/] )->required('username')->to_hash;
+    my %clean = $c->structured_query( name=>[qw/first last/] )->required('username')->to_hash;
     my $dumped = Dumper(\%clean);
     $c->res->body($dumped);
   }
@@ -82,7 +82,7 @@ BEGIN {
   $INC{'MyApp/Controller/Root.pm'} = __FILE__;
 
   package MyApp;
-  use Catalyst 'StrongParameters';
+  use Catalyst 'StructuredParameters';
   
   MyApp->request_class_traits(['TestTrait']);
   MyApp->setup;

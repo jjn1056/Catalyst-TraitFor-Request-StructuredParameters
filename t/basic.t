@@ -13,7 +13,7 @@ BEGIN {
 
   sub body :Local {
     my ($self, $c) = @_;
-    my %clean = $c->req->strong_body
+    my %clean = $c->req->structured_body
       ->permitted(['person'], +{'email' => []})
       ->namespace(['person'])
       ->permitted(
@@ -35,7 +35,7 @@ BEGIN {
 
   sub data :Local {
     my ($self, $c) = @_;
-    my %clean = $c->req->strong_data
+    my %clean = $c->req->structured_data
       ->permitted(
         ['person'],
         'name',
@@ -57,7 +57,7 @@ BEGIN {
 
   sub query :Local {
     my ($self, $c) = @_;
-    my %clean = $c->req->strong_query( name=>[qw/first last/] )->required('username')->to_hash;
+    my %clean = $c->req->structured_query( name=>[qw/first last/] )->required('username')->to_hash;
     my $dumped = Dumper(\%clean);
     $c->res->body($dumped);
   }
@@ -75,7 +75,7 @@ BEGIN {
   package MyApp;
   use Catalyst;
   
-  MyApp->request_class_traits(['Catalyst::TraitFor::Request::StrongParameters']);
+  MyApp->request_class_traits(['Catalyst::TraitFor::Request::StructuredParameters']);
   MyApp->setup;
 }
 
