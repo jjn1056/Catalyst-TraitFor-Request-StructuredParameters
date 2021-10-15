@@ -78,6 +78,10 @@ In a controller:
 
 # DESCRIPTION
 
+This replaces [Catalyst::TraitFor::Request::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStrongParameters).   If you were using that you should switch
+to this.   This is right now just a name change but any bug fixes will happen here.   Sooner or later I'll
+remove [Catalyst::TraitFor::Request::StrongParameters](https://metacpan.org/pod/Catalyst%3A%3ATraitFor%3A%3ARequest%3A%3AStrongParameters) from the indexes.
+
 WARNING: This is a quick midnight hack and the code could have sharp edges.   Happy to take broken
 test cases.
 
@@ -362,7 +366,7 @@ the same terms as Perl itself.
 
 Hey! **The above document had some coding errors, which are explained below:**
 
-- Around line 160:
+- Around line 164:
 
     Nested L<> are illegal.  Pretending inner one is X<...> so can continue looking for other errors.
 

@@ -121,6 +121,10 @@ In a controller:
 
 =head1 DESCRIPTION
 
+This replaces L<Catalyst::TraitFor::Request::StrongParameters>.   If you were using that you should switch
+to this.   This is right now just a name change but any bug fixes will happen here.   Sooner or later I'll
+remove L<Catalyst::TraitFor::Request::StrongParameters> from the indexes.
+
 WARNING: This is a quick midnight hack and the code could have sharp edges.   Happy to take broken
 test cases.
 
