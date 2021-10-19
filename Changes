@@ -1,5 +1,10 @@
 # This file documents the revision history for Perl extension Catalyst-TraitFor-Request-StructuredParameters.
 
+0.006 - 2021-10-19
+  - ome new helper methods on getting processed parameters.
+  - New option to control how long an array can be (Sets default of 1000 items).
+  - Fixed some typos here and there.
+
 0.005 - 2021-10-15
   - Fixed another 'oops' in the metadata.
 

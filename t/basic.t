@@ -35,7 +35,7 @@ BEGIN {
 
   sub data :Local {
     my ($self, $c) = @_;
-    my %clean = $c->req->structured_data
+    my $clean = $c->req->structured_data
       ->permitted(
         ['person'],
         'name',
@@ -49,10 +49,14 @@ BEGIN {
             +{note => []},
         ]},
         +{'email' => []},
-      )->to_hash;
+      );
+    
+    my %clean = $clean->to_hash;
 
     my $dumped = Dumper(\%clean);
     $c->res->body($dumped);
+
+    Test::Most::is_deeply( [$clean->get('age','name')], [$clean{age}, $clean{name}]);
   }
 
   sub query :Local {

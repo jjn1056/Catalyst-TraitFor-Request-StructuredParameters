@@ -5,6 +5,9 @@ use Storable qw(dclone);
 use Catalyst::Utils;
 use Catalyst::Exception::MissingParameter;
 use Catalyst::Exception::InvalidArrayPointer;
+use Catalyst::Exception::InvalidArrayLength;
+
+our $MAX_ARRAY_DEPTH = 1000;
 
 has context => (is=>'ro', required=>1);
 has _namespace => (is=>'rw', required=>0, isa=>'ArrayRef', predicate=>'has_namespace', init_arg=>'namespace');
@@ -12,15 +15,23 @@ has _flatten_array_value => (is=>'ro', required=>1, init_arg=>'flatten_array_val
 has _current => (is=>'rw', required=>0, init_arg=>undef);
 has _required => (is=>'rw', required=>0, init_arg=>undef);
 has _src => (is=>'ro', required=>1, init_arg=>'src');
+has _max_array_depth => (is=>'ro', required=>1, init_arg=>'max_array_depth', default=>$MAX_ARRAY_DEPTH);
 
 sub namespace {
   my ($self, $arg) = @_;
   $self->_namespace($arg) if defined($arg);
   return $self;
 }
+
 sub flatten_array_value {
   my ($self, $arg) = @_;
   $self->_flatten_array_value($arg) if defined($arg);
+  return $self;
+}
+
+sub max_array_depth {
+  my ($self, $arg) = @_;
+  $self->_max_array_depth($arg) if defined($arg);
   return $self;
 }
 
@@ -67,6 +78,16 @@ sub to_hash {
   return %{ $self->_current || +{} };
 }
 
+sub keys {
+  my $self = shift;
+  return CORE::keys %{ $self->_current || +{} };
+}
+
+sub get {
+  my $self = shift;
+  return @{ $self->_current || +{} }{@_};
+}
+
 sub _sorted {
   return 1 if $a eq '';
   return -1 if $b eq '';
@@ -93,12 +114,20 @@ sub _parse_formlike {
       my ($local_ns, $rules) = %$rule;
       my $key = join('.', @$ns, $local_ns);
       my %indexes = ();
-      foreach my $context_field (keys %$context) {
+      foreach my $context_field (CORE::keys %$context) {
         my ($i, $under) = ($context_field =~m/^\Q$key\E\[(\d*)\]\.?(.*)$/);
         next unless defined $i;
         $indexes{$i} = $under;
       }
-      foreach my $index(sort _sorted keys %indexes) {
+
+      my $found_array_depth = scalar CORE::keys %indexes;
+      Catalyst::Exception::InvalidArrayLength->throw(
+        pointer=>$local_ns,
+        max=>$self->max_array_depth,
+        attempted=>$found_array_depth
+      ) if $found_array_depth > $self->max_array_depth;
+
+      foreach my $index(sort _sorted CORE::keys %indexes) {
         my $cloned_rules = dclone($rules); # each iteration in the loop needs its own copy of the rules;
         $cloned_rules = [''] unless @$cloned_rules; # to handle the bare array case
         my $value = $self->_parse_formlike( $context, [@$ns, "${local_ns}[$index]"], $cloned_rules);
@@ -148,7 +177,16 @@ sub _parse_data {
       }
 
       Catalyst::Exception::InvalidArrayPointer->throw(pointer=>join('.', (@$ns, $local_ns))) unless (ref($value)||'') eq 'ARRAY';
+
+      my $found_array_depth =  scalar @$value;
+      Catalyst::Exception::InvalidArrayLength->throw(
+        pointer=>$local_ns,
+        max=>$self->max_array_depth,
+        attempted=>$found_array_depth
+      ) if $found_array_depth > $self->max_array_depth;
+      
       my @gathered = ();
+
       foreach my $item (@$value) {
         my $cloned_rules = dclone($rules); # each iteration in the loop needs its own copy of the rules;
         $cloned_rules = [''] unless @$cloned_rules; # to handle the bare array case

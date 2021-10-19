@@ -1,7 +1,5 @@
 package Catalyst::Plugin::StructuredParameters;
 
-our $VERSION = '0.001';
-
 use Moose::Role;
 use Scalar::Util;
 

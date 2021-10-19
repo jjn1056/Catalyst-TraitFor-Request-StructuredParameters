@@ -1,6 +1,6 @@
 package Catalyst::TraitFor::Request::StructuredParameters;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moose::Role;
 use Catalyst::Utils::StructuredParameters;
@@ -201,9 +201,23 @@ Switch to indicated if you want to flatten any arrayref values to 'pick last'.  
 for body and query parameters since its a common hack around quirks with certain types of HTML form controls
 (like checkboxes) which don't return a value when not selected or checked.
 
+=head2 max_array_depth (number)
+
+Prevent incoming parameters from having too many items in an array value.  Default is 1,000.  You may wish
+to set a different value based on your requirements.  Throws L<Catalyst::Exception::InvalidArrayLength> if violated.
+
 =head2 to_hash
 
 Returns the currently filtered parameters based on the current permitted and/or required specifications. 
+
+=head2 keys
+
+Returns an unorderd list of all the top level keys
+
+=head2 get (@key_names)
+
+Given a list of key names, return values.   Doesn't currently do anything if you use a key name that
+doesn't exist (you just get 'undef').
 
 =head1 CHAINING
 
