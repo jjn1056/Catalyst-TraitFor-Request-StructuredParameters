@@ -360,14 +360,39 @@ set the index since that could open your code to potential hackers) we permit fi
     'person.credit_cards[].exp' => '4024-01-01',
 
 This 'empty' index will always be considered the final element when sorting.  You may have more than
-one final empty index as well:
+one final empty index as well when its either the last rule or the rule only contains a single index
 
+    'person.notes[]' => 'This is a note',
+    'person.notes[]' => 'This is another note',
     'person.person_roles[1].role_id' => '1',
     'person.person_roles[2].role_id' => '2',
     'person.person_roles[].role_id' => '3',
     'person.person_roles[].role_id' => '4',
 
+Would produce:
 
+    +{
+      person => {
+        notes => [
+          'This is a note',
+          'This is another note',
+        ],
+        person_roles => [
+          {
+            role_id => 1,
+          },
+          {
+            role_id => 2,
+          },
+          {
+            role_id => 3,
+          },
+          {
+            role_id => 4,
+          },
+        ],
+      },
+    };
 
 =head1 EXCEPTIONS
 
